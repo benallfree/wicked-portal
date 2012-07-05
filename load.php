@@ -1,15 +1,5 @@
 <?
 
-W::register_filter('config', function($old_config, $module_name) {
-  $config_fpath = W::$root_fpath."/config/{$module_name}.php";
-  $config = array();
-  if(file_exists($config_fpath))
-  {
-    require($config_fpath);
-  }
-  return array_merge($old_config, $config);
-});
-
 $default_config = $config;
 
 $config_fpath = W::$root_fpath."/config/portal.php";
@@ -40,17 +30,48 @@ W::register_filter('window_title', function($title) use ($config) {
   return $title ? $title : $config['app_title'];
 });
 
-$module_name = $config['default_module'];
+$request = W::request();
+$parts = explode('/',trim($request['path'],'/'));
 
-$content_fpath = W::$root_fpath."/app/{$module_name}/routes/{$config['default_route']}.php";
-$config = W::$modules[$module_name];
+$try = array(
+  array($config['default_module'], $config['default_action']),
+);
+if(count($parts)>0)
+{
+  array_unshift($try, 
+    array($parts[0], $config['default_action'])
+  );
+  if(count($parts)>1)
+  {
+    array_unshift($try,
+      array($parts[0], $parts[1])
+    );
+  }
+}
+
+foreach($try as $path_info)
+{
+  list($module_name, $action_name) = $path_info;
+  $module_config = W::module($module_name);
+  $content_fnode = $module_config['fpath']."/routes/{$action_name}";
+  foreach(W::glob($content_fnode.".*") as $content_fpath)
+  {
+    $parts = pathinfo($content_fpath);
+    if($parts['extension']!='php')
+    {
+      $content_fpath = W::filter("{$parts['extension']}_to_php", $content_fpath);
+      W::dprint($content_fpath);
+    }
+    break 2;
+  }
+}
+
+$config = W::module($module_name);
 ob_start();
 require($content_fpath);
 $s = ob_get_clean();
 
-
-
-$s = W::do_filter('header', $s);
-$s = W::do_filter('footer', $s);
+$s = W::filter('header', $s);
+$s = W::filter('footer', $s);
 
 echo $s;

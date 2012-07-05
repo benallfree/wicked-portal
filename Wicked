@@ -3,10 +3,11 @@ $config = array(
   'format'=>'1.0.0',
   'requires'=>array(
     'path_utils',
+    'request',
   ),
   'autoload'=>array(),
   'default_module'=>'home',
-  'default_route'=>'index',
+  'default_action'=>'index',
   'app_title'=>'My App',
   'modules'=>array(),
 );
