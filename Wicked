@@ -8,11 +8,5 @@ $config = array(
   'default_module'=>'home',
   'default_route'=>'index',
   'app_title'=>'My App',
+  'modules'=>array(),
 );
-
-W::register_filter('config', function($old_config, $module_name) {
-  $config_fpath = W::$root_fpath."/config/{$module_name}.php";
-  $config = array();
-  @include($config_fpath);
-  return array_merge($old_config, $config);
-});

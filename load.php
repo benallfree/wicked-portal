@@ -1,7 +1,23 @@
 <?
 
-W::load('debug');
-W::load('coolbook');
+W::register_filter('config', function($old_config, $module_name) {
+  $config_fpath = W::$root_fpath."/config/{$module_name}.php";
+  $config = array();
+  if(file_exists($config_fpath))
+  {
+    require($config_fpath);
+  }
+  return array_merge($old_config, $config);
+});
+
+$default_config = $config;
+
+$config_fpath = W::$root_fpath."/config/portal.php";
+if(file_exists($config_fpath))
+{
+  require($config_fpath);
+}
+$config = array_merge($default_config, $config);
 
 $app_fpath = W::$root_fpath."/app";
 if(!file_exists($app_fpath))
@@ -10,15 +26,15 @@ if(!file_exists($app_fpath))
 }
 foreach(W::glob($app_fpath.'/*', GLOB_ONLYDIR) as $module_fpath)
 {
-  W::load($module_fpath);
+  $config['modules'][] = $module_fpath;
+}
+
+foreach($config['modules'] as $module_name)
+{
+  W::load($module_name);
 }
 
 
-$default_config = $config;
-
-$config_fpath = W::$root_fpath."/config/portal.php";
-@include($config_fpath);
-$config = array_merge($default_config, $config);
 
 W::register_filter('window_title', function($title) use ($config) {
   return $title ? $title : $config['app_title'];
