@@ -32,10 +32,12 @@ W::register_filter('window_title', function($title) use ($config) {
 
 $request = W::request();
 $parts = explode('/',trim($request['path'],'/'));
+$parts = W::array_compact($parts);
 
 $try = array(
   array($config['default_module'], $config['default_action']),
 );
+
 if(count($parts)>0)
 {
   array_unshift($try, 
