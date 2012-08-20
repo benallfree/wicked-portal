@@ -1,21 +1,21 @@
 <?
 if (get_magic_quotes_gpc() == true) 
-{
-  foreach($_COOKIE as $key => $value) 
   {
-    $_COOKIE[$key] = stripslashes($value);
+  // recursively strip slashes from an array
+  function stripslashes_r($array) {
+    foreach ($array as $key => $value) {
+      $array[$key] = is_array($value) ?
+        stripslashes_r($value) :
+        stripslashes($value);
+    }
+    return $array;
   }
-  foreach($_GET as $key => $value) 
-  {
-    $_GET[$key] = stripslashes($value);
-  }
-  foreach($_POST as $key => $value) 
-  {
-    $_POST[$key] = stripslashes($value);
-  }
-  foreach($_REQUEST as $key => $value) 
-  {
-    $_REQUEST[$key] = stripslashes($value);
+  
+  if (get_magic_quotes_gpc()) {
+    $_GET     = stripslashes_r($_GET);
+    $_POST    = stripslashes_r($_POST);
+    $_COOKIE  = stripslashes_r($_COOKIE);
+    $_REQUEST = stripslashes_r($_REQUEST);
   }
 }      
 

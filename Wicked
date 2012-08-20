@@ -5,10 +5,12 @@ $config = array(
     'path_utils',
     'request',
     'collections',
+    'class_lazyloader',
   ),
   'autoload'=>array(),
   'default_module'=>'home',
   'default_action'=>'index',
   'app_title'=>'My App',
   'modules'=>array(),
+  'should_auto_start'=>true,
 );
