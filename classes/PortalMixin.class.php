@@ -76,6 +76,12 @@ class PortalMixin extends Mixin
       }
     }
     
+    if(!isset($content_fpath))
+    {
+      W::dprint($try,false);
+      W::error("No path found.");
+      
+    }
     return array($module_name, $content_fpath);
   }
   

@@ -6,6 +6,7 @@ $config = array(
     'request',
     'collections',
     'class_lazyloader',
+    'debug',
   ),
   'autoload'=>array(),
   'default_module'=>'home',
